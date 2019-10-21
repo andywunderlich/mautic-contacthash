@@ -1,26 +1,22 @@
 <?php
 
-
-namespace MauticPlugin\InstantSegmentsBundle\EventListener;
+namespace MauticPlugin\ContactHashBundle\EventListener;
 
 use Mautic\CoreBundle\EventListener\CommonSubscriber;
 use Mautic\EmailBundle\EventListener\MatchFilterForLeadTrait;
 use Mautic\LeadBundle\Entity\LeadList;
 use Mautic\LeadBundle\Event\LeadEvent;
 use Mautic\LeadBundle\LeadEvents;
-use Mautic\PluginBundle\Helper\IntegrationHelper;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Mautic\LeadBundle\Model\LeadModel;
+//use Mautic\PluginBundle\Helper\IntegrationHelper;
+//use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ContactListener extends CommonSubscriber
 {
 
     use MatchFilterForLeadTrait;
 
-    /**
-     * @var IntegrationHelper
-     */
-    private $helper;
-    private $container;
+    private $leadModel;
 
     /**
      * ButtonSubscriber constructor.
@@ -29,12 +25,10 @@ class ContactListener extends CommonSubscriber
      * @param ContainerInterface $container
      */
     public function __construct(
-        IntegrationHelper $helper,
-        ContainerInterface $container
+        LeadModel $leadModel
     )
     {
-        $this->helper = $helper;
-        $this->container = $container;
+        $this->leadModel     = $leadModel;
     }
 
     public static function getSubscribedEvents()
@@ -46,12 +40,17 @@ class ContactListener extends CommonSubscriber
 
     public function onLeadPostSave(LeadEvent $event)
     {
+        $config = $event->getConfig();
+        $lead = $event->getLead(); // entity
 
-        /** @var \Mautic\LeadBundle\Model\LeadModel $leadModel */
-        $leadModel = $this->container->get('mautic.lead.model.lead');
-        $lead = $leadModel->getEntity($event->getLead()->getId());
-        $leadModel->setFieldValues($lead, ['hash' => hash('sha256', $lead->getEmail())]);
-        $leadModel->saveEntity($lead);
+        //$leadFields = $lead->getFields();
+        //$leadFields['hash'] = hash('sha256', $lead->getEmail());
+        //$lead->setFields($leadFields);
+
+        $lead->addUpdatedField('hash', hash('sha256', $lead->getEmail()));
+
+        $this->leadModel->setFieldValues($lead);
+        $this->leadModel->saveEntity($lead);
     }
 
 }

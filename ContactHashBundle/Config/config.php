@@ -1,5 +1,8 @@
 <?php
 
+// arguments
+// // 'mautic.helper.integration',
+//'mautic.helper.integration', 'service_container'
 
 return [
     'name'        => 'ContactHash',
@@ -9,21 +12,19 @@ return [
 
     'services' => [
         'events' => [
-            'mautic.plugin.instantsegments.subscriber' => [
-                'class'     => MauticPlugin\InstantSegmentsBundle\EventListener\ContactListener::class,
+            'mautic.plugin.contacthash.subscriber' => [
+                'class'     => MauticPlugin\ContactHashBundle\EventListener\ContactListener::class,
                 'arguments' => [
-                    'mautic.helper.integration',
+                    'mautic.lead.model.lead'
                 ],
             ],
         ],
     ],
 
     'integrations' => [
-        'mautic.integration.instantsegments' => [
-            'class'     => \MauticPlugin\InstantSegmentsBundle\Integration\ContactHashIntegration::class,
-            'arguments' => [
-                'mautic.helper.integration', 'service_container'
-            ],
+        'mautic.integration.contacthash' => [
+            'class'     => \MauticPlugin\ContactHashBundle\Integration\ContactHashIntegration::class,
+            'arguments' => [],
         ],
     ],
 ];

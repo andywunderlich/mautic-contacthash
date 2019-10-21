@@ -1,6 +1,6 @@
 <?php
 
-namespace MauticPlugin\InstantSegmentsBundle\Integration;
+namespace MauticPlugin\ContactHashBundle\Integration;
 
 use Mautic\PluginBundle\Integration\AbstractIntegration;
 use Symfony\Component\Form\Form;
